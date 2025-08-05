@@ -12,10 +12,10 @@ interface BillboardRouteContext {
 
 export async function GET(
   req: NextRequest,
-  context: BillboardRouteContext
+  { params }: { params: { storeId: string; billboardId: string } }
 ) {
   try {
-    const { billboardId } = context.params;
+    const { billboardId } = params;
 
     const billboard = await prismadb.billboard.findUnique({
       where: {
