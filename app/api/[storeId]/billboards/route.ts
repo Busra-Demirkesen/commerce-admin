@@ -2,12 +2,15 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse, NextRequest } from "next/server";
 
-export async function POST(
-  req: NextRequest,
-  context: { params: { storeId: string } }
-) {
+function extractStoreIdFromUrl(url: string) {
+  const parts = url.split("/");
+  // /api/[storeId]/billboards → storeId sondan 2 önceki eleman
+  return parts[parts.length - 2];
+}
+
+export async function POST(req: NextRequest) {
   try {
-    const { params } = context;
+    const storeId = extractStoreIdFromUrl(req.url);
     const { userId } = await auth();
     const body = await req.json();
     const { label, imageUrl } = body;
@@ -18,7 +21,7 @@ export async function POST(
 
     const storeByUserId = await prismadb.store.findFirst({
       where: {
-        id: params.storeId,
+        id: storeId,
         userId,
       },
     });
@@ -29,7 +32,7 @@ export async function POST(
       data: {
         label,
         imageUrl,
-        storeId: params.storeId,
+        storeId,
       },
     });
 
@@ -40,16 +43,13 @@ export async function POST(
   }
 }
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { storeId: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
-    const { params } = context;
+    const storeId = extractStoreIdFromUrl(req.url);
 
     const billboards = await prismadb.billboard.findMany({
       where: {
-        storeId: params.storeId,
+        storeId,
       },
     });
 
