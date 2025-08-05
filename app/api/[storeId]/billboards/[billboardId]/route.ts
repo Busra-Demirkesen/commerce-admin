@@ -3,12 +3,19 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+interface BillboardRouteContext {
+  params: {
+    storeId: string;
+    billboardId: string;
+  };
+}
+
 export async function GET(
   req: NextRequest,
-  context: { params: { storeId: string; billboardId: string } }
+  context: BillboardRouteContext
 ) {
   try {
-    const { storeId, billboardId } = context.params;
+    const { billboardId } = context.params;
 
     const billboard = await prismadb.billboard.findUnique({
       where: {
@@ -25,7 +32,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: { storeId: string; billboardId: string } }
+  context: BillboardRouteContext
 ) {
   try {
     const { storeId, billboardId } = context.params;
@@ -66,7 +73,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { storeId: string; billboardId: string } }
+  context: BillboardRouteContext
 ) {
   try {
     const { storeId, billboardId } = context.params;
