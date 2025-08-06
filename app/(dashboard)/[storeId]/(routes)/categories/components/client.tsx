@@ -12,8 +12,9 @@ import { DataTable } from "@/components/ui/data-table";
 import { ApiList } from "@/components/ui/api-list";
 
 interface CategoryClientProps {
-  data: CategoryColumn;
+  data: CategoryColumn[]; // ← ✅ array olacak şekilde düzeltildi
 }
+
 
 const CategoryClient: React.FC<CategoryClientProps> = ({ data }) => {
   const router = useRouter();
