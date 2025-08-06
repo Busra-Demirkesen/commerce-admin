@@ -2,12 +2,14 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function POST(
-  req: NextRequest,
-  context: { params: { storeId: string } }
-) {
+function extractStoreIdFromUrl(url: string) {
+  const parts = url.split("/");
+  return parts[parts.length - 2];
+}
+
+export async function POST(req: NextRequest) {
   try {
-    const { storeId } = context.params;
+    const storeId = extractStoreIdFromUrl(req.url);
     const { userId } = await auth();
     const body = await req.json();
 
@@ -65,13 +67,11 @@ export async function POST(
   }
 }
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { storeId: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
-    const { storeId } = context.params;
+    const storeId = extractStoreIdFromUrl(req.url);
     const { searchParams } = new URL(req.url);
+
     const categoryId = searchParams.get("categoryId") || undefined;
     const colorId = searchParams.get("colorId") || undefined;
     const sizeId = searchParams.get("sizeId") || undefined;

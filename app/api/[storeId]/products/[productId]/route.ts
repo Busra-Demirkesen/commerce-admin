@@ -10,11 +10,11 @@ export async function GET(
     const { productId, storeId } = await context.params;
 
     if (!storeId) {
-      return new NextResponse('Store ID is required', { status: 400 });
+      return new NextResponse("Store ID is required", { status: 400 });
     }
 
     if (!productId) {
-      return new NextResponse('Product ID is required', { status: 400 });
+      return new NextResponse("Product ID is required", { status: 400 });
     }
 
     const product = await prismadb.product.findUnique({
@@ -61,14 +61,14 @@ export async function PATCH(
     if (!categoryId) return new NextResponse("Category ID is required", { status: 400 });
     if (!colorId) return new NextResponse("Color ID is required", { status: 400 });
     if (!sizeId) return new NextResponse("Size ID is required", { status: 400 });
-    if (!images || !images.length) return new NextResponse('Images are required', { status: 400 });
+    if (!images || !images.length) return new NextResponse("Images are required", { status: 400 });
 
     if (!storeId) {
-      return new NextResponse('Store ID is required', { status: 400 });
+      return new NextResponse("Store ID is required", { status: 400 });
     }
 
     if (!productId) {
-      return new NextResponse('Product ID is required', { status: 400 });
+      return new NextResponse("Product ID is required", { status: 400 });
     }
 
     const storeByUserId = await prismadb.store.findFirst({
@@ -130,14 +130,14 @@ export async function DELETE(
     const { productId, storeId } = await context.params;
     const { userId } = await auth();
 
-    if (!userId) return new NextResponse('Unauthenticated', { status: 401 });
+    if (!userId) return new NextResponse("Unauthenticated", { status: 401 });
 
     if (!storeId) {
-      return new NextResponse('Store ID is required', { status: 400 });
+      return new NextResponse("Store ID is required", { status: 400 });
     }
 
     if (!productId) {
-      return new NextResponse('Product ID is required', { status: 400 });
+      return new NextResponse("Product ID is required", { status: 400 });
     }
 
     const storeByUserId = await prismadb.store.findFirst({

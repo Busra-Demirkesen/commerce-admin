@@ -2,24 +2,26 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function POST(
-  req: NextRequest,
-  context: { params: { storeId: string } }
-) {
+function extractStoreIdFromUrl(url: string) {
+  const parts = url.split("/");
+  return parts[parts.length - 2];
+}
+
+export async function POST(req: NextRequest) {
   try {
+    const storeId = extractStoreIdFromUrl(req.url);
     const { userId } = await auth();
     const body = await req.json();
     const { name, billboardId } = body;
-    const { params } = context;
 
     if (!userId) return new NextResponse("Unauthenticated", { status: 401 });
     if (!name) return new NextResponse("Name is required", { status: 400 });
     if (!billboardId) return new NextResponse("Billboard ID is required", { status: 400 });
-    if (!params.storeId) return new NextResponse("StoreId is required", { status: 400 });
+    if (!storeId) return new NextResponse("StoreId is required", { status: 400 });
 
     const storeByUserId = await prismadb.store.findFirst({
       where: {
-        id: params.storeId,
+        id: storeId,
         userId,
       },
     });
@@ -30,7 +32,7 @@ export async function POST(
       data: {
         name,
         billboardId,
-        storeId: params.storeId,
+        storeId,
       },
     });
 
@@ -41,20 +43,17 @@ export async function POST(
   }
 }
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { storeId: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
-    const { params } = context;
+    const storeId = extractStoreIdFromUrl(req.url);
 
-    if (!params.storeId) {
+    if (!storeId) {
       return new NextResponse("StoreId is required", { status: 400 });
     }
 
     const categories = await prismadb.category.findMany({
       where: {
-        storeId: params.storeId,
+        storeId,
       },
     });
 

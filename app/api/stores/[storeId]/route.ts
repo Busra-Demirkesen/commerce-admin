@@ -4,10 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: { storeId: string } }
+  context: { params: Promise<{ storeId: string }> }
 ) {
   try {
-    const { storeId } = context.params;
+    const { storeId } = await context.params;
     const { userId } = await auth();
     const body = await req.json();
     const { name } = body;
@@ -30,10 +30,10 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { storeId: string } }
+  context: { params: Promise<{ storeId: string }> }
 ) {
   try {
-    const { storeId } = context.params;
+    const { storeId } = await context.params;
     const { userId } = await auth();
 
     if (!userId) return new NextResponse("Unauthorized", { status: 401 });

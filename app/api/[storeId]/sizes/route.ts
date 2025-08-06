@@ -2,12 +2,14 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(
-  req: NextRequest,
-  context: { params: { storeId: string } }
-) {
+function extractStoreIdFromUrl(url: string) {
+  const parts = url.split("/");
+  return parts[parts.length - 2]; // /api/[storeId]/sizes
+}
+
+export async function POST(req: NextRequest) {
   try {
-    const { storeId } = context.params;
+    const storeId = extractStoreIdFromUrl(req.url);
     const { userId } = await auth();
     const body = await req.json();
     const { name, value } = body;
@@ -41,12 +43,9 @@ export async function POST(
   }
 }
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { storeId: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
-    const { storeId } = context.params;
+    const storeId = extractStoreIdFromUrl(req.url);
 
     if (!storeId) return new NextResponse("StoreId is required", { status: 400 });
 
