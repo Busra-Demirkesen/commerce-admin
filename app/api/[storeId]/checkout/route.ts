@@ -10,7 +10,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-// storeId'yi URL'den manuel çıkaran yardımcı fonksiyon
+
 function extractStoreIdFromUrl(url: string) {
   const parts = url.split('/');
   return parts[parts.length - 2]; // /api/[storeId]/checkout → sondan 2 önce
