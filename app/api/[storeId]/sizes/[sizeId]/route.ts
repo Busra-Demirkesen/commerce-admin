@@ -4,10 +4,18 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  context: { params: { sizeId: string; storeId: string } }
+  context: { params: Promise<{ sizeId: string; storeId: string }> },
 ) {
   try {
-    const { sizeId } = context.params;
+    const { sizeId, storeId } = await context.params;
+
+    if (!storeId) {
+      return new NextResponse('Store ID is required', { status: 400 });
+    }
+
+    if (!sizeId) {
+      return new NextResponse('Size ID is required', { status: 400 });
+    }
 
     const size = await prismadb.size.findUnique({
       where: {
@@ -24,17 +32,25 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: { sizeId: string; storeId: string } }
+  context: { params: Promise<{ sizeId: string; storeId: string }> },
 ) {
   try {
-    const { sizeId, storeId } = context.params;
+    const { sizeId, storeId } = await context.params;
     const { userId } = await auth();
     const body = await req.json();
     const { name, value } = body;
 
-    if (!userId) return new NextResponse("Unauthenticated", { status: 401 });
-    if (!name) return new NextResponse("Name is required", { status: 400 });
-    if (!value) return new NextResponse("Value is required", { status: 400 });
+    if (!userId) return new NextResponse('Unauthenticated', { status: 401 });
+    if (!name) return new NextResponse('Name is required', { status: 400 });
+    if (!value) return new NextResponse('Value is required', { status: 400 });
+
+    if (!storeId) {
+      return new NextResponse('Store ID is required', { status: 400 });
+    }
+
+    if (!sizeId) {
+      return new NextResponse('Size ID is required', { status: 400 });
+    }
 
     const storeByUserId = await prismadb.store.findFirst({
       where: {
@@ -65,13 +81,21 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { sizeId: string; storeId: string } }
+  context: { params: Promise<{ sizeId: string; storeId: string }> },
 ) {
   try {
-    const { sizeId, storeId } = context.params;
+    const { sizeId, storeId } = await context.params;
     const { userId } = await auth();
 
-    if (!userId) return new NextResponse("Unauthenticated", { status: 401 });
+    if (!userId) return new NextResponse('Unauthenticated', { status: 401 });
+
+    if (!storeId) {
+      return new NextResponse('Store ID is required', { status: 400 });
+    }
+
+    if (!sizeId) {
+      return new NextResponse('Size ID is required', { status: 400 });
+    }
 
     const storeByUserId = await prismadb.store.findFirst({
       where: {

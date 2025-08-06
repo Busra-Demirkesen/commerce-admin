@@ -4,14 +4,22 @@ import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  context: { params: { colorId: string } }
+  context: { params: Promise<{ colorId: string; storeId: string }> },
 ) {
   try {
-    const { params } = context;
+    const { colorId, storeId } = await context.params;
+
+    if (!storeId) {
+      return new NextResponse('Store ID is required', { status: 400 });
+    }
+
+    if (!colorId) {
+      return new NextResponse('Color ID is required', { status: 400 });
+    }
 
     const color = await prismadb.color.findUnique({
       where: {
-        id: params.colorId,
+        id: colorId,
       },
     });
 
@@ -24,22 +32,29 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: { storeId: string; colorId: string } }
+  context: { params: Promise<{ storeId: string; colorId: string }> },
 ) {
   try {
-    const { params } = context;
+    const { colorId, storeId } = await context.params;
     const { userId } = await auth();
     const body = await req.json();
     const { name, value } = body;
 
-    if (!userId) return new NextResponse("Unauthenticated", { status: 401 });
-    if (!name) return new NextResponse("Name is required", { status: 400 });
-    if (!value) return new NextResponse("Value is required", { status: 400 });
-    if (!params.colorId) return new NextResponse("ColorId is required", { status: 400 });
+    if (!userId) return new NextResponse('Unauthenticated', { status: 401 });
+    if (!name) return new NextResponse('Name is required', { status: 400 });
+    if (!value) return new NextResponse('Value is required', { status: 400 });
+
+    if (!storeId) {
+      return new NextResponse('Store ID is required', { status: 400 });
+    }
+
+    if (!colorId) {
+      return new NextResponse('Color ID is required', { status: 400 });
+    }
 
     const storeByUserId = await prismadb.store.findFirst({
       where: {
-        id: params.storeId,
+        id: storeId,
         userId,
       },
     });
@@ -48,8 +63,8 @@ export async function PATCH(
 
     const color = await prismadb.color.updateMany({
       where: {
-        id: params.colorId,
-        storeId: params.storeId,
+        id: colorId,
+        storeId: storeId,
       },
       data: {
         name,
@@ -66,18 +81,25 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: { storeId: string; colorId: string } }
+  context: { params: Promise<{ storeId: string; colorId: string }> },
 ) {
   try {
-    const { params } = context;
+    const { colorId, storeId } = await context.params;
     const { userId } = await auth();
 
-    if (!userId) return new NextResponse("Unauthenticated", { status: 401 });
-    if (!params.colorId) return new NextResponse("ColorId is required", { status: 400 });
+    if (!userId) return new NextResponse('Unauthenticated', { status: 401 });
+
+    if (!storeId) {
+      return new NextResponse('Store ID is required', { status: 400 });
+    }
+
+    if (!colorId) {
+      return new NextResponse('Color ID is required', { status: 400 });
+    }
 
     const storeByUserId = await prismadb.store.findFirst({
       where: {
-        id: params.storeId,
+        id: storeId,
         userId,
       },
     });
@@ -86,7 +108,7 @@ export async function DELETE(
 
     const color = await prismadb.color.deleteMany({
       where: {
-        id: params.colorId,
+        id: colorId,
       },
     });
 
