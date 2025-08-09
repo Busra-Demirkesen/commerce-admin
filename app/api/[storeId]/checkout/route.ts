@@ -5,11 +5,10 @@ import { stripe } from '@/lib/stripe';
 import prismadb from '@/lib/prismadb';
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': process.env.FRONTEND_STORE_URL || '*',
   'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
-
 
 function extractStoreIdFromUrl(url: string) {
   const parts = url.split('/');
@@ -23,7 +22,7 @@ export async function OPTIONS() {
 
 export async function POST(req: NextRequest) {
   try {
-    const storeId = extractStoreIdFromUrl(req.url); // ✅ URL'den çek
+    const storeId = extractStoreIdFromUrl(req.url);
     const { productIds } = await req.json();
 
     if (!productIds || productIds.length === 0) {
@@ -38,16 +37,17 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = products.map((product) => ({
-      quantity: 1,
-      price_data: {
-        currency: 'USD',
-        product_data: {
-          name: product.name,
+    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] =
+      products.map((product) => ({
+        quantity: 1,
+        price_data: {
+          currency: 'USD',
+          product_data: {
+            name: product.name,
+          },
+          unit_amount: product.price.toNumber() * 100,
         },
-        unit_amount: product.price.toNumber() * 100,
-      },
-    }));
+      }));
 
     const order = await prismadb.order.create({
       data: {
