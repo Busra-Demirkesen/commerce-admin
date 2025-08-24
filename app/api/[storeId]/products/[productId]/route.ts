@@ -2,6 +2,7 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse, type NextRequest } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { Prisma } from "@prisma/client";
 
 export async function GET(
   req: NextRequest,
@@ -100,7 +101,7 @@ export async function PATCH(
     }
 
     // If price changed, deactivate old price and create new one
-    if (productToUpdate.price.toNumber() !== price.toNumber()) {
+    if (new Prisma.Decimal(price).toNumber() !== productToUpdate.price.toNumber()) {
       if (productToUpdate.stripePriceId) {
         await stripe.prices.update(productToUpdate.stripePriceId, {
           active: false,
@@ -109,7 +110,7 @@ export async function PATCH(
 
       const newStripePrice = await stripe.prices.create({
         product: productToUpdate.stripeProductId || "", // Use existing Stripe Product or throw error
-        unit_amount: price.toNumber() * 100,
+        unit_amount: new Prisma.Decimal(price).toNumber() * 100,
         currency: "usd",
       });
       // Update the product with the new Stripe price ID

@@ -2,6 +2,7 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse, type NextRequest } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { Prisma } from "@prisma/client";
 
 function extractStoreIdFromUrl(url: string) {
   const parts = url.split("/");
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
     // Create a Stripe price
     const stripePrice = await stripe.prices.create({
       product: stripeProduct.id,
-      unit_amount: price.toNumber() * 100, // Stripe expects amount in cents
+      unit_amount: new Prisma.Decimal(price).toNumber() * 100, // Stripe expects amount in cents
       currency: "usd",
     });
 
