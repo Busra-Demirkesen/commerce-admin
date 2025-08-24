@@ -1,6 +1,7 @@
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse, type NextRequest } from "next/server";
+import { stripe } from "@/lib/stripe";
 
 function extractStoreIdFromUrl(url: string) {
   const parts = url.split("/");
@@ -42,6 +43,20 @@ export async function POST(req: NextRequest) {
 
     if (!storeByUserId) return new NextResponse("Unauthorized", { status: 403 });
 
+    // Create a Stripe product
+    const stripeProduct = await stripe.products.create({
+      name: name,
+      description: "Product for " + name,
+      images: images.map((image: { url: string }) => image.url),
+    });
+
+    // Create a Stripe price
+    const stripePrice = await stripe.prices.create({
+      product: stripeProduct.id,
+      unit_amount: price.toNumber() * 100, // Stripe expects amount in cents
+      currency: "usd",
+    });
+
     const product = await prismadb.product.create({
       data: {
         name,
@@ -52,6 +67,8 @@ export async function POST(req: NextRequest) {
         isFeatured,
         isArchived,
         storeId,
+        stripeProductId: stripeProduct.id, // Save Stripe product ID
+        stripePriceId: stripePrice.id, // Save Stripe price ID
         images: {
           createMany: {
             data: images.map((image: { url: string }) => image),

@@ -1,6 +1,7 @@
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse, type NextRequest } from "next/server";
+import { stripe } from "@/lib/stripe";
 
 export async function GET(
   req: NextRequest,
@@ -80,6 +81,48 @@ export async function PATCH(
 
     if (!storeByUserId) return new NextResponse("Unauthorized", { status: 403 });
 
+    const productToUpdate = await prismadb.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    if (!productToUpdate) {
+      return new NextResponse("Product not found", { status: 404 });
+    }
+
+    // Update Stripe Product
+    if (productToUpdate.stripeProductId) {
+      await stripe.products.update(productToUpdate.stripeProductId, {
+        name: name,
+        images: images.map((image: { url: string }) => image.url),
+      });
+    }
+
+    // If price changed, deactivate old price and create new one
+    if (productToUpdate.price.toNumber() !== price.toNumber()) {
+      if (productToUpdate.stripePriceId) {
+        await stripe.prices.update(productToUpdate.stripePriceId, {
+          active: false,
+        });
+      }
+
+      const newStripePrice = await stripe.prices.create({
+        product: productToUpdate.stripeProductId || "", // Use existing Stripe Product or throw error
+        unit_amount: price.toNumber() * 100,
+        currency: "usd",
+      });
+      // Update the product with the new Stripe price ID
+      await prismadb.product.update({
+        where: {
+          id: productId,
+        },
+        data: {
+          stripePriceId: newStripePrice.id,
+        },
+      });
+    }
+
     // Önce eski tüm görselleri sil
     await prismadb.product.update({
       where: {
@@ -148,6 +191,21 @@ export async function DELETE(
     });
 
     if (!storeByUserId) return new NextResponse("Unauthorized", { status: 403 });
+
+    const productToDelete = await prismadb.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    if (!productToDelete) {
+      return new NextResponse("Product not found", { status: 404 });
+    }
+
+    // Delete Stripe Product
+    if (productToDelete.stripeProductId) {
+      await stripe.products.del(productToDelete.stripeProductId);
+    }
 
     const deletedProduct = await prismadb.product.deleteMany({
       where: {
