@@ -63,16 +63,37 @@ const signature = headersList.get('Stripe-Signature') as string;
 
     const productIds = order.orderItems.map((item) => item.productId);
 
-    await prismadb.product.updateMany({
-      where: {
-        id: {
-          in: productIds,
+    // Her bir ürünün stok miktarını azalt
+    for (const item of order.orderItems) {
+      const product = await prismadb.product.findUnique({
+        where: {
+          id: item.productId,
         },
-      },
-      data: {
-        isArchived: true,
-      },
-    });
+      });
+
+      if (product) {
+        const newStock = Math.max(0, product.stock - 1); // Stoğu en az 0 olacak şekilde azalt
+        await prismadb.product.update({
+          where: {
+            id: item.productId,
+          },
+          data: {
+            stock: newStock,
+          },
+        });
+      }
+    }
+    // isArchived: true yapma mantığı kaldırıldı
+    // await prismadb.product.updateMany({
+    //   where: {
+    //     id: {
+    //       in: productIds,
+    //     },
+    //   },
+    //   data: {
+    //     isArchived: true,
+    //   },
+    // });
   }
 
   return new NextResponse(null, { status: 200 });

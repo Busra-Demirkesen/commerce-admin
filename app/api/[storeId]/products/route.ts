@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
       images,
       isFeatured,
       isArchived,
+      stock, // Yeni eklendi
     } = body;
 
     if (!userId) return new NextResponse("Unauthenticated", { status: 401 });
@@ -67,6 +68,7 @@ export async function POST(req: NextRequest) {
         sizeId,
         isFeatured,
         isArchived,
+        stock, // Yeni eklendi
         storeId,
         stripeProductId: stripeProduct.id, // Save Stripe product ID
         stripePriceId: stripePrice.id, // Save Stripe price ID

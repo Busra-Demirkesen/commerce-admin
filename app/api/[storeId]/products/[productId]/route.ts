@@ -55,6 +55,7 @@ export async function PATCH(
       images,
       isFeatured,
       isArchived,
+      stock, // Yeni eklendi
     } = body;
 
     if (!userId) return new NextResponse("Unauthenticated", { status: 401 });
@@ -140,6 +141,7 @@ export async function PATCH(
         },
         isFeatured,
         isArchived,
+        stock, // Yeni eklendi
       },
     });
 
