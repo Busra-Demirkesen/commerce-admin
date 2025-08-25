@@ -36,6 +36,12 @@ const signature = headersList.get('Stripe-Signature') as string;
   ];
   const addressString = addressComponents.filter(Boolean).join(', ');
 
+  // Webhook günlüklerine eklenen bilgiler
+  console.log('[WEBHOOK] Received checkout.session.completed event.');
+  console.log('[WEBHOOK] Order ID:', session.metadata?.orderId);
+  console.log('[WEBHOOK] Customer Address:', addressString);
+  console.log('[WEBHOOK] Customer Phone:', session.customer_details?.phone);
+
   if (event.type === 'checkout.session.completed') {
     if (!session.metadata?.orderId) {
       return new NextResponse('Order ID not found in session metadata.', { status: 400 });
