@@ -32,6 +32,7 @@ const ProductPage = async ({
     id: product.id,
     name: product.name,
     price: product.price.toNumber(), // ✅ Decimal → number dönüşümü
+    stock: product.stock, // Yeni eklendi
     isFeatured: product.isFeatured,
     isArchived: product.isArchived,
     categoryId: product.categoryId,
