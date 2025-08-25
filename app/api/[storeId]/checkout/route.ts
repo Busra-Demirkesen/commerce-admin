@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { NextResponse, NextRequest } from 'next/server';
-
+import { Prisma } from "@prisma/client";
 import { stripe } from '@/lib/stripe';
 import prismadb from '@/lib/prismadb';
 
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
           product_data: {
             name: product.name,
           },
-          unit_amount: product.price.toNumber() * 100,
+          unit_amount: new Prisma.Decimal(product.price).toNumber() * 100, // Burayı güncelliyoruz
         },
       }));
 
@@ -84,6 +84,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('[CHECKOUT_POST]', error);
-    return new NextResponse('Internal Error', { status: 500 });
+    return new NextResponse('Internal Error', { status: 500, headers: corsHeaders }); // Buraya headers ekliyoruz
   }
 }
