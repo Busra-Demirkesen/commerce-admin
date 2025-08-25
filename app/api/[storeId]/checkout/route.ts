@@ -38,31 +38,40 @@ export async function POST(req: NextRequest) {
     });
 
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] =
-      products.map((product) => ({
-        quantity: 1,
-        price_data: {
-          currency: 'USD',
-          product_data: {
-            name: product.name,
+      products.map((product) => {
+        if (product.price === null || product.price === undefined) {
+          throw new Error(`Product with ID ${product.id} has no price defined.`);
+        }
+        return {
+          quantity: 1,
+          price_data: {
+            currency: 'USD',
+            product_data: {
+              name: product.name,
+            },
+            unit_amount: new Prisma.Decimal(product.price).toNumber() * 100,
           },
-          unit_amount: new Prisma.Decimal(product.price).toNumber() * 100, // Burayı güncelliyoruz
-        },
-      }));
+        };
+      });
+
+    // `order` oluşturulmadan önce veriyi günlüğe yazdır
+    const orderData = {
+      storeId,
+      isPaid: false,
+      orderItems: {
+        create: productIds.map((productId: string) => ({
+          product: {
+            connect: {
+              id: productId,
+            },
+          },
+        })),
+      },
+    };
+    console.log("[CHECKOUT_POST] Order Data:", JSON.stringify(orderData, null, 2));
 
     const order = await prismadb.order.create({
-      data: {
-        storeId,
-        isPaid: false,
-        orderItems: {
-          create: productIds.map((productId: string) => ({
-            product: {
-              connect: {
-                id: productId,
-              },
-            },
-          })),
-        },
-      },
+      data: orderData,
     });
 
     const session = await stripe.checkout.sessions.create({
