@@ -50,6 +50,7 @@ const formSchema = z.object({
 
   isFeatured: z.boolean().default(false),
   isArchived: z.boolean().default(false),
+  stock: z.coerce.number().min(0, "Stock must be at least 0"),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -90,6 +91,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       sizeId: "",
       isFeatured: false,
       isArchived: false,
+      stock: 0,
     },
   });
 
@@ -223,6 +225,25 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                     type="number"
                     disabled={loading}
                     placeholder="9.99"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/* Stock */}
+          <FormField
+            control={form.control}
+            name="stock"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Stock</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    disabled={loading}
+                    placeholder="0"
                     {...field}
                   />
                 </FormControl>
