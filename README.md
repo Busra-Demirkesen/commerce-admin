@@ -106,10 +106,15 @@ npx prisma studio # Open Prisma Studio UI
 
 
 ---
-## 🔗 Related Links 
-# Buradan sonraki metin düz olmalı
+## 🔗 Related Links
+
 🛒 Storefront: Commerce Storefront
+
 📘 Docs / Design: (add your Figma or Notion link)
+
 🌐 Live Demo: (add your Vercel deployment link)
+
 ---
+
+> ⭐ “Code is like humor. When you have to explain it, it’s bad.”
 
