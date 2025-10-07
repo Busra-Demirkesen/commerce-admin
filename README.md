@@ -1,6 +1,6 @@
 # 🛍️ Commerce Admin Dashboard
 
-> Full-featured admin panel for managing products, categories, orders, and stores.  
+> Full-featured admin panel for managing products, categories, orders, and stores. 
 > **Companion project:** [Commerce Storefront](https://github.com/Busra-Demirkesen/commerce-store)
 
 ---
@@ -16,8 +16,7 @@ It connects seamlessly with the **Commerce Storefront** app for a full-stack exp
 - 💳 Stripe integration for payments  
 - 🧾 Order management (status, list, details)  
 - 🏪 Multi-store support (`/[storeId]/settings`)  
-- 🎨 Built with **Tailwind CSS** and **shadcn/ui**  
-- ⚡ Fast, responsive, and accessible UI  
+- 🎨 Built with **Tailwind CSS** and **shadcn/ui** - ⚡ Fast, responsive, and accessible UI  
 
 ---
 
@@ -47,18 +46,10 @@ styles/
 public/
 prisma/schema.prisma
 
-
-
-
----
-
-
----
-
 ## ⚙️ Setup Instructions
 ```bash
 # 1️⃣ Clone the repository
-git clone https://github.com/Busra-Demirkesen/commerce-admin.git
+git clone [https://github.com/Busra-Demirkesen/commerce-admin.git](https://github.com/Busra-Demirkesen/commerce-admin.git)
 cd commerce-admin
 
 # 2️⃣ Install dependencies
@@ -99,33 +90,3 @@ npx prisma migrate dev
 # 5️⃣ Start the development server
 npm run dev
 # http://localhost:3000
-
-
-
-## 🧪 Useful Scripts
-```bash
-npm run dev       # Start development server
-npm run build     # Build for production
-npm start         # Run production build
-npx prisma studio # Open Prisma Studio UI
-
-
-
-
-# Deploy on Vercel
-# Add all required .env keys in project settings
-# Stripe webhooks (local development)
-stripe listen --forward-to localhost:3000/api/stripe/webhook
-
-
-
-🔗 Related Links
-
-🛒 Storefront: Commerce Storefront
-
-📘 Docs / Design: (add your Figma or Notion link)
-
-🌐 Live Demo: (add your Vercel deployment link)
-
-⭐ “Code is like humor. When you have to explain it, it’s bad.”
-
