@@ -9,6 +9,15 @@
 The **Commerce Admin Dashboard** provides a modern, scalable way to manage e-commerce data including products, categories, stock, images, and orders.  
 It connects seamlessly with the **Commerce Storefront** app for a full-stack experience.
 
+<img width="1568" height="756" alt="e-commerce project screenshot5" src="https://github.com/user-attachments/assets/319659d6-b2c4-4d4b-bdea-96ebf139900c" />
+
+
+<img width="1570" height="757" alt="e-commerce project screenshot6" src="https://github.com/user-attachments/assets/31aa41fb-c079-42cd-813a-7c2870e236ae" />
+
+
+<img width="1569" height="757" alt="e-commerce project screenshot7" src="https://github.com/user-attachments/assets/32366636-b7b5-4e51-a7c2-66cfeb8ba043" />
+
+
 ### 🔑 Key Features
 - 🔐 Authentication (Clerk or NextAuth)  
 - 📦 Product & Category CRUD operations  
