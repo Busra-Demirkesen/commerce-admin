@@ -109,3 +109,23 @@ npm run build     # Build for production
 npm start         # Run production build
 npx prisma studio # Open Prisma Studio UI
 
+
+
+
+# Deploy on Vercel
+# Add all required .env keys in project settings
+# Stripe webhooks (local development)
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+
+
+
+🔗 Related Links
+
+🛒 Storefront: Commerce Storefront
+
+📘 Docs / Design: (add your Figma or Notion link)
+
+🌐 Live Demo: (add your Vercel deployment link)
+
+⭐ “Code is like humor. When you have to explain it, it’s bad.”
+
