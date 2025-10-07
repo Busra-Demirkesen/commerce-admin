@@ -34,3 +34,14 @@ It connects seamlessly with the **Commerce Storefront** app for a full-stack exp
 ---
 
 ## 📁 Project Structure
+
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/Busra-Demirkesen/commerce-admin.git
+cd commerce-admin
+
