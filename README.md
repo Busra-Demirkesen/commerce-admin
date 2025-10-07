@@ -60,15 +60,11 @@ git clone https://github.com/Busra-Demirkesen/commerce-admin.git
 cd commerce-admin
 
 
-### 2️⃣ Install dependencies
-```bash
 npm install
 # or
 yarn install
 
 
-### 3️⃣ Configure environment variables
-```bash
 # Database
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DB
 
@@ -94,16 +90,14 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_WEBHOOK_SECRET=
 
 
-### 4️⃣ Run database migrations
+
 npx prisma migrate dev
 
-### 5️⃣ Start the development server
 
 npm run dev
 # http://localhost:3000
 
 
-🧪 Useful Scripts
 
 npm run dev       # Start development server
 npm run build     # Build for production
@@ -111,26 +105,13 @@ npm start         # Run production build
 npx prisma studio # Open Prisma Studio UI
 
 
-🚀 Deployment
 
-Deploy on Vercel
-.
-
-Add all required .env keys in project settings.
-
-Stripe webhooks (local development):
 stripe listen --forward-to localhost:3000/api/stripe/webhook
 
 
-🔗 Related Links
 
-🛒 Storefront: Commerce Storefront
 
-📘 Docs / Design: (add your Figma or Notion link)
-
-🌐 Live Demo: (add your Vercel deployment link)
-
-⭐ “Code is like humor. When you have to explain it, it’s bad.”
+---
 
 
 
