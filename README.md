@@ -108,11 +108,10 @@ npx prisma studio # Open Prisma Studio UI
 ---
 ## 🔗 Related Links
 
-🛒 Storefront: Commerce Storefront
+🛒 Storefront Repo: [Commerce Storefront](https://github.com/Busra-Demirkesen/commerce-store)
+🌐 Storefront Live Demo: [Canlı Demo](https://commerce-store-hazel.vercel.app/)
 
-📘 Docs / Design: (add your Figma or Notion link)
-
-🌐 Live Demo: (add your Vercel deployment link)
+⚙️ Admin Live Demo: [Canlı Demo](https://commerce-admin-roan.vercel.app/8a2df2f4-9303-4feb-8caf-d0869eb9e6fd/products/new)
 
 ---
 
