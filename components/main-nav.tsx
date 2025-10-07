@@ -1,74 +1,145 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { usePathname, useParams } from "next/navigation";
+import { useMemo } from "react";
 import Link from "next/link";
+import { usePathname, useParams } from "next/navigation";
+import { Menu } from "lucide-react";
 
-export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+interface RouteItem {
+  href: string;
+  label: string;
+  active: boolean;
+}
+
+export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const pathname = usePathname();
   const params = useParams();
-// const storeId = params?.storeId?.toString();
+  const storeIdParam = params?.storeId;
 
-  const routes = [
-    {
-      href: `/${params.storeId}`,
-      label: "Overview",
-      active: pathname === `/${params.storeId}`,
-    },
-    {
-      href: `/${params.storeId}/billboards`,
-      label: "Billboards",
-      active: pathname === `/${params.storeId}/billboards`,
-    },
-    {
-      href: `/${params.storeId}/categories`,
-      label: "Categories",
-      active: pathname === `/${params.storeId}/categories`,
-    },
-    {
-      href: `/${params.storeId}/sizes`,
-      label: "Sizes",
-      active: pathname === `/${params.storeId}/sizes`,
-    },
+  const storeId = Array.isArray(storeIdParam)
+    ? storeIdParam[0]
+    : typeof storeIdParam === "string"
+    ? storeIdParam
+    : undefined;
+
+  const routes = useMemo<RouteItem[]>(() => {
+    if (!storeId) {
+      return [];
+    }
+
+    const basePath = `/${storeId}`;
+
+    return [
       {
-      href: `/${params.storeId}/colors`,
-      label: "Colors",
-      active: pathname === `/${params.storeId}/colors`,
-    },
-       {
-      href: `/${params.storeId}/products`,
-      label: "Products",
-      active: pathname === `/${params.storeId}/products`,
-    },
-       {
-      href: `/${params.storeId}/orders`,
-      label: "Orders",
-      active: pathname === `/${params.storeId}/orders`,
-    },
-     {
-      href: `/${params.storeId}/settings`,
-      label: "Settings",
-      active: pathname === `/${params.storeId}/settings`,
-    },
-  ];
+        href: basePath,
+        label: "Overview",
+        active: pathname === basePath,
+      },
+      {
+        href: `${basePath}/billboards`,
+        label: "Billboards",
+        active: pathname === `${basePath}/billboards`,
+      },
+      {
+        href: `${basePath}/categories`,
+        label: "Categories",
+        active: pathname === `${basePath}/categories`,
+      },
+      {
+        href: `${basePath}/sizes`,
+        label: "Sizes",
+        active: pathname === `${basePath}/sizes`,
+      },
+      {
+        href: `${basePath}/colors`,
+        label: "Colors",
+        active: pathname === `${basePath}/colors`,
+      },
+      {
+        href: `${basePath}/products`,
+        label: "Products",
+        active: pathname === `${basePath}/products`,
+      },
+      {
+        href: `${basePath}/orders`,
+        label: "Orders",
+        active: pathname === `${basePath}/orders`,
+      },
+      {
+        href: `${basePath}/settings`,
+        label: "Settings",
+        active: pathname === `${basePath}/settings`,
+      },
+    ];
+  }, [pathname, storeId]);
+
+  if (!routes.length) {
+    return null;
+  }
 
   return (
-    <nav
-      className={cn("flex items-center space-x-4 lg:space-x-6", className)}
-      {...props}
-    >
-      {routes.map((route) => (
-        <Link
-          key={route.href}
-          href={route.href}
-          className={cn(
-            "text-sm font-medium transition-colors hover:text-primary",
-            route.active ? "text-black dark:text-white" : "text-muted-foreground"
-          )}
-        >
-          {route.label}
-        </Link>
-      ))}
-    </nav>
+    <div className={cn("flex items-center gap-2 lg:gap-4", className)} {...props}>
+      <nav className="hidden lg:flex items-center space-x-4 xl:space-x-6">
+        {routes.map((route) => (
+          <Link
+            key={route.href}
+            href={route.href}
+            className={cn(
+              "text-sm font-medium transition-colors hover:text-primary",
+              route.active ? "text-foreground" : "text-muted-foreground"
+            )}
+          >
+            {route.label}
+          </Link>
+        ))}
+      </nav>
+
+      <div className="lg:hidden">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="shrink-0"
+              aria-label="Toggle navigation menu"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            {routes.map((route) => (
+              <DropdownMenuItem
+                key={route.href}
+                asChild
+                className={cn(
+                  route.active
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground"
+                )}
+              >
+                <Link className="flex w-full items-center justify-between" href={route.href}>
+                  <span>{route.label}</span>
+                  {route.active && (
+                    <span
+                      aria-hidden="true"
+                      className="ml-2 inline-flex size-2 rounded-full bg-primary"
+                    />
+                  )}
+                </Link>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
   );
 }
