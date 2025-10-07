@@ -100,3 +100,5 @@ npm run dev        # Start development server
 npm run build      # Build for production
 npm start          # Run production build
 npx prisma studio # Open Prisma Studio UI
+
+---
