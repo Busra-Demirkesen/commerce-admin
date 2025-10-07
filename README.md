@@ -90,3 +90,13 @@ npx prisma migrate dev
 # 5️⃣ Start the development server
 npm run dev
 # http://localhost:3000
+
+
+
+
+## 🧪 Useful Scripts
+```bash
+npm run dev        # Start development server
+npm run build      # Build for production
+npm start          # Run production build
+npx prisma studio # Open Prisma Studio UI
