@@ -61,12 +61,14 @@ cd commerce-admin
 
 
 ### 2️⃣ Install dependencies
+```bash
 npm install
 # or
 yarn install
 
 
 ### 3️⃣ Configure environment variables
+```bash
 # Database
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DB
 
