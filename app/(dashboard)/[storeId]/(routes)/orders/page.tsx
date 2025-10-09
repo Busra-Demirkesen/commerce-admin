@@ -7,7 +7,7 @@ import { auth } from "@clerk/nextjs/server"; // Corrected import for auth
 
 const OrdersPage = async ({ params }: { params: Promise<{ storeId: string }> }) => {
   const { storeId } = await params; // Await params to resolve the promise
-  const { userId } = auth();
+  const { userId } = await auth(); // await auth() to resolve the promise
 
   if (!userId) {
     return null; // Kullanıcı oturum açmamışsa bir şey gösterme
