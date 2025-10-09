@@ -8,6 +8,7 @@ import { auth } from "@clerk/nextjs/server"; // Corrected import for auth
 const OrdersPage = async ({ params }: { params: Promise<{ storeId: string }> }) => {
   const { storeId } = await params; // Await params to resolve the promise
   const { userId } = await auth(); // await auth() to resolve the promise
+  console.log("Current userId:", userId);
 
   if (!userId) {
     return null; // Kullanıcı oturum açmamışsa bir şey gösterme
@@ -30,6 +31,8 @@ const OrdersPage = async ({ params }: { params: Promise<{ storeId: string }> }) 
       createdAt: "desc",
     },
   });
+
+  console.log("Fetched orders:", orders);
 
   const formattedOrders: OrderColumn[] = orders.map((item) => {
     return {
