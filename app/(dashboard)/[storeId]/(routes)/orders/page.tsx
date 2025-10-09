@@ -3,10 +3,10 @@ import OrderClient from "./components/client";
 import { OrderColumn } from "./components/columns";
 import { format } from "date-fns";
 import { formatter } from "@/lib/utils";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server"; // Corrected import for auth
 
-const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
-  const { storeId } = params; // params zaten çözülmüş bir obje olacak
+const OrdersPage = async ({ params }: { params: Promise<{ storeId: string }> }) => {
+  const { storeId } = await params; // Await params to resolve the promise
   const { userId } = auth();
 
   if (!userId) {
