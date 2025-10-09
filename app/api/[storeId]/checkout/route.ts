@@ -23,10 +23,28 @@ export async function OPTIONS() {
 export async function POST(req: NextRequest) {
   try {
     const storeId = extractStoreIdFromUrl(req.url);
-    const { productIds } = await req.json();
+    const { productIds, email, phone, address } = await req.json();
 
     if (!productIds || productIds.length === 0) {
       return new NextResponse('Product ids are required', { status: 400 });
+    }
+
+    if (!email) {
+      return new NextResponse('Email is required', { status: 400 });
+    }
+
+    let user = await prismadb.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) {
+      user = await prismadb.user.create({
+        data: {
+          email: email,
+        },
+      });
     }
 
     const products = await prismadb.product.findMany({
@@ -55,8 +73,17 @@ export async function POST(req: NextRequest) {
       });
 
     // `order` oluşturulmadan önce veriyi günlüğe yazdır
-    const orderData = {
-      storeId,
+    const orderData: Prisma.OrderCreateInput = {
+      store: {
+        connect: {
+          id: storeId,
+        },
+      },
+      user: {
+        connect: {
+          id: user.id,
+        },
+      },
       isPaid: false,
       orderItems: {
         create: productIds.map((productId: string) => ({
@@ -67,6 +94,8 @@ export async function POST(req: NextRequest) {
           },
         })),
       },
+      ...(phone && { phone }),
+      ...(address && { address }),
     };
     console.log("[CHECKOUT_POST] Order Data:", JSON.stringify(orderData, null, 2));
 
