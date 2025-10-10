@@ -3,21 +3,12 @@ import OrderClient from "./components/client";
 import { OrderColumn } from "./components/columns";
 import { format } from "date-fns";
 import { formatter } from "@/lib/utils";
-import { auth } from "@clerk/nextjs/server"; // Corrected import for auth
 
 const OrdersPage = async ({ params }: { params: Promise<{ storeId: string }> }) => {
-  const { storeId } = await params; // Await params to resolve the promise
-  const { userId } = await auth(); // await auth() to resolve the promise
-  console.log("Current userId:", userId);
-
-  if (!userId) {
-    return null; // Kullanıcı oturum açmamışsa bir şey gösterme
-  }
-
+  const { storeId } = await params;
   const orders = await prismadb.order.findMany({
     where: {
       storeId: storeId,
-      userId: userId, // Kullanıcıya göre filtreleme
     },
     include: {
       orderItems: {
@@ -25,21 +16,17 @@ const OrdersPage = async ({ params }: { params: Promise<{ storeId: string }> }) 
           product: true,
         },
       },
-      user: true, // Kullanıcı bilgilerini dahil et
     },
     orderBy: {
       createdAt: "desc",
     },
   });
 
-  console.log("Fetched orders:", orders);
-
   const formattedOrders: OrderColumn[] = orders.map((item) => {
     return {
       id: item.id,
-      userEmail: item.user?.email || "", // Handle possibly null user
-      phone: item.phone || "",
-      address: item.address || "",
+      phone: item.phone,
+      address: item.address,
       products: item.orderItems
         .map((orderItem) => orderItem.product.name)
         .join(", "),
