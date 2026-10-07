@@ -12,7 +12,7 @@ const corsHeaders = {
 
 function extractStoreIdFromUrl(url: string) {
   const parts = url.split('/');
-  return parts[parts.length - 2]; // /api/[storeId]/checkout → sondan 2 önce
+  return parts[parts.length - 2];
 }
 
 // CORS preflight request
@@ -29,6 +29,11 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Product ids are required', { status: 400 });
     }
 
+    const quantities = new Map<string, number>();
+    for (const productId of productIds as string[]) {
+      quantities.set(productId, (quantities.get(productId) ?? 0) + 1);
+    }
+
     const products = await prismadb.product.findMany({
       where: {
         id: {
@@ -43,7 +48,7 @@ export async function POST(req: NextRequest) {
           throw new Error(`Product with ID ${product.id} has no price defined.`);
         }
         return {
-          quantity: 1,
+          quantity: quantities.get(product.id) ?? 1,
           price_data: {
             currency: 'USD',
             product_data: {
@@ -54,7 +59,6 @@ export async function POST(req: NextRequest) {
         };
       });
 
-    // `order` oluşturulmadan önce veriyi günlüğe yazdır
     const orderData = {
       storeId,
       isPaid: false,
@@ -93,6 +97,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('[CHECKOUT_POST]', error);
-    return new NextResponse('Internal Error', { status: 500, headers: corsHeaders }); // Buraya headers ekliyoruz
+    return new NextResponse('Internal Error', { status: 500, headers: corsHeaders });
   }
 }

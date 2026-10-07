@@ -36,7 +36,6 @@ const signature = headersList.get('Stripe-Signature') as string;
   ];
   const addressString = addressComponents.filter(Boolean).join(', ');
 
-  // Webhook günlüklerine eklenen bilgiler
   console.log('[WEBHOOK] Received checkout.session.completed event.');
   console.log('[WEBHOOK] Order ID:', session.metadata?.orderId);
   console.log('[WEBHOOK] Customer Address:', addressString);
@@ -45,6 +44,16 @@ const signature = headersList.get('Stripe-Signature') as string;
   if (event.type === 'checkout.session.completed') {
     if (!session.metadata?.orderId) {
       return new NextResponse('Order ID not found in session metadata.', { status: 400 });
+    }
+
+    const existingOrder = await prismadb.order.findUnique({
+      where: {
+        id: session.metadata.orderId,
+      },
+    });
+
+    if (existingOrder?.isPaid) {
+      return new NextResponse(null, { status: 200 });
     }
 
     const order = await prismadb.order.update({
@@ -61,39 +70,34 @@ const signature = headersList.get('Stripe-Signature') as string;
       },
     });
 
-    const productIds = order.orderItems.map((item) => item.productId);
-
-    // Her bir ürünün stok miktarını azalt
+    const quantities = new Map<string, number>();
     for (const item of order.orderItems) {
-      const product = await prismadb.product.findUnique({
+      quantities.set(item.productId, (quantities.get(item.productId) ?? 0) + 1);
+    }
+
+    for (const [productId, quantity] of quantities) {
+      await prismadb.product.updateMany({
         where: {
-          id: item.productId,
+          id: productId,
+        },
+        data: {
+          stock: {
+            decrement: quantity,
+          },
         },
       });
-
-      if (product) {
-        const newStock = Math.max(0, product.stock - 1); // Stoğu en az 0 olacak şekilde azalt
-        await prismadb.product.update({
-          where: {
-            id: item.productId,
+      await prismadb.product.updateMany({
+        where: {
+          id: productId,
+          stock: {
+            lt: 0,
           },
-          data: {
-            stock: newStock,
-          },
-        });
-      }
+        },
+        data: {
+          stock: 0,
+        },
+      });
     }
-    // isArchived: true yapma mantığı kaldırıldı
-    // await prismadb.product.updateMany({
-    //   where: {
-    //     id: {
-    //       in: productIds,
-    //     },
-    //   },
-    //   data: {
-    //     isArchived: true,
-    //   },
-    // });
   }
 
   return new NextResponse(null, { status: 200 });
